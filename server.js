@@ -18,6 +18,14 @@ app.post("/api/contact", async (req, res) => {
     },
   });
 
+  transporter.verify((error) => {
+    if (error) {
+      console.error("Nodemailer Error:", error);
+    } else {
+      console.log("Nodemailer is ready to send emails!");
+    }
+  });
+
   const mailOptions = {
     from: email,
     to: process.env.EMAIL_USER,
@@ -27,10 +35,12 @@ app.post("/api/contact", async (req, res) => {
 
   try {
     await transporter.sendMail(mailOptions);
-    res.status(200).json({ message: "Email sent successfully" });
+    res.status(200).json({ success: "Email sent successfully!" });
   } catch (error) {
-    res.status(500).json({ error: "Error sending email" });
+    console.error("Email Error:", error);
+    res.status(500).json({ error: error.message });
   }
 });
 
-app.listen(5000, () => console.log("Server running on port 5000"));
+// Remove app.listen
+module.exports = app;
